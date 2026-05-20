@@ -6,6 +6,41 @@ workflows:
     environment:
       flutter: stable
     scripts:
+      - name: Migrate to Fresh Android Project and Build
+        script: |
+          # 1. Locate your real code folder where pubspec.yaml sits
+          REAL_PROJECT_DIR=$(find . -name "pubspec.yaml" -exec dirname {} \;)
+          
+          # 2. Back up your pure source files to a temporary location
+          mkdir -p /tmp/app_source
+          cp -r "$REAL_PROJECT_DIR/lib" /tmp/app_source/
+          cp "$REAL_PROJECT_DIR/pubspec.yaml" /tmp/app_source/
+          [ -d "$REAL_PROJECT_DIR/assets" ] && cp -r "$REAL_PROJECT_DIR/assets" /tmp/app_source/
+          
+          # 3. Completely wipe the outdated environment folder
+          rm -rf "$REAL_PROJECT_DIR"
+          
+          # 4. Force a clean creation using a valid lowercase project name
+          flutter create "$REAL_PROJECT_DIR" --project-name loxfield --platforms android
+          
+          # 5. Restore your custom logic and assets code blocks
+          cp -f /tmp/app_source/pubspec.yaml "$REAL_PROJECT_DIR/"
+          rm -rf "$REAL_PROJECT_DIR/lib"
+          cp -r /tmp/app_source/lib "$REAL_PROJECT_DIR/"
+          [ -d /tmp/app_source/assets ] && cp -r /tmp/app_source/assets "$REAL_PROJECT_DIR/"
+          
+          # 6. Step inside and compile your release build
+          cd "$REAL_PROJECT_DIR"
+          flutter build apk --release --target-platform android-arm64
+    artifacts:
+      - "**/build/app/outputs/flutter-apk/*-release.apk"workflows:
+  flutter-android:
+    name: Flutter Android
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      flutter: stable
+    scripts:
       - name: Repair and Build Android App
         script: |
           # 1. Locate the app folder
