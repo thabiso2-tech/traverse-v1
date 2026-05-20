@@ -1,0 +1,21 @@
+workflows:
+  flutter-android:
+    name: Flutter Android
+    instance_type: mac_mini_m2
+    max_build_duration: 120
+    environment:
+      flutter: stable
+    scripts:
+      - name: Repair and Build Android App
+        script: |
+          # 1. Locate the app folder
+          FLUTTER_ROOT=$(find . -name "pubspec.yaml" -exec dirname {} \;)
+          cd "$FLUTTER_ROOT"
+          
+          # 2. Force Flutter to recreate and upgrade missing/outdated android files
+          flutter create . --platforms android
+          
+          # 3. Compile the fresh APK
+          flutter build apk --release --target-platform android-arm64
+    artifacts:
+      - "**/build/app/outputs/flutter-apk/*-release.apk"
