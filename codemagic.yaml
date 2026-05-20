@@ -6,7 +6,7 @@ workflows:
     environment:
       flutter: stable
     scripts:
-      - name: Migrate to Fresh Android Project and Build
+      - name: Migrate, Fix Typo and Build
         script: |
           # 1. Locate your real code folder where pubspec.yaml sits
           REAL_PROJECT_DIR=$(find . -name "pubspec.yaml" -exec dirname {} \;)
@@ -29,8 +29,11 @@ workflows:
           cp -r /tmp/app_source/lib "$REAL_PROJECT_DIR/"
           [ -d /tmp/app_source/assets ] && cp -r /tmp/app_source/assets "$REAL_PROJECT_DIR/"
           
-          # 6. Step inside and compile your release build
+          # 6. Automagically patch the FontWeight.black typo inside dashboard.dart
           cd "$REAL_PROJECT_DIR"
+          sed -i '' 's/FontWeight.black/FontWeight.w900/g' lib/screens/dashboard.dart 2>/dev/null || sed -i 's/FontWeight.black/FontWeight.w900/g' lib/screens/dashboard.dart
+          
+          # 7. Compile your release build
           flutter build apk --release --target-platform android-arm64
     artifacts:
       - "**/build/app/outputs/flutter-apk/*-release.apk"
