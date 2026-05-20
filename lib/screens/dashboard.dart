@@ -26,7 +26,7 @@ class _TraverseDashboardState extends State<TraverseDashboard> with SingleTicker
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('3D TRAVERSE ADJ', style: TextStyle(color: Colors.black, fontWeight: FontWeight.black, letterSpacing: 1.2)),
+        title: const Text('3D TRAVERSE ADJ', style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
         backgroundColor: Colors.amber,
         bottom: TabBar(
           controller: _tabController,
